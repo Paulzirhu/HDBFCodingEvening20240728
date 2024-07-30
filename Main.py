@@ -46,6 +46,12 @@ def handle_disconnect():
         users.pop(username, None)
         emit('user_disconnected', username, broadcast=True)
 
+@socketio.on('typing')
+def handle_typing():
+    username = session.get('username')
+    if username:
+        emit('user_typing', username, broadcast=True)
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
