@@ -41,10 +41,11 @@ def handle_connect():
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    username = session.get('username')
+    username = session.pop('username', None)
     if username:
         users.pop(username, None)
         emit('user_disconnected', username, broadcast=True)
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
