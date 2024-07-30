@@ -11,12 +11,15 @@ messages = []
 def login():
     if request.method == 'POST':
         username = request.form['username']
-        if username:
+        if username and len(username) > 0:
             session['username'] = username
             users[username] = request.sid
             return redirect(url_for('index'))
+        else:
+            return "Username cannot be empty", 400
+    if 'username' in session:
+        return redirect(url_for('index'))
     return render_template('login.html')
-
 import html
 
 @socketio.on('message')
