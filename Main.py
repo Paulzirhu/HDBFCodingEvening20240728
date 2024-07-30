@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, session, redirect, url_for
-from flask_socketio import SocketIO, send, emit, join_room, leave_room
-app = Flask(__name__)
+from flask_socketio import SocketIO, send, emit
 from datetime import datetime
+import html
 
+app = Flask(__name__)
 app.secret_key = 'secret!123'
 socketio = SocketIO(app)
 
@@ -16,16 +17,15 @@ def login():
         if username and len(username) > 0:
             session['username'] = username
             users[username] = request.sid
-            return redirect(url_for('index'))
+            return redirect(url_for('chat'))  # Changed to 'chat'
         else:
             return "Username cannot be empty", 400
     if 'username' in session:
-        return redirect(url_for('index'))
+        return redirect(url_for('chat'))  # Changed to 'chat'
     return render_template('login.html')
-import html
 
-@app.route('/')
-def index():
+@app.route('/chat')
+def chat():
     return render_template('chat.html')
 
 @socketio.on('message')
@@ -36,7 +36,6 @@ def handle_message(msg):
     message = {'username': username, 'msg': sanitized_msg, 'timestamp': timestamp}
     messages.append(message)
     send(message, broadcast=True)
-
 
 @socketio.on('connect')
 def handle_connect():
@@ -57,7 +56,6 @@ def handle_typing():
     username = session.get('username')
     if username:
         emit('user_typing', username, broadcast=True)
-
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
