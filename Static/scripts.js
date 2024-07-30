@@ -1,4 +1,6 @@
 const socket = io();
+let typingTimer;
+const typingInterval = 1000; // 1 second
 
 document.addEventListener('DOMContentLoaded', () => {
     const username = "{{ username }}";
@@ -33,9 +35,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.getElementById('message').addEventListener('keypress', (e) => {
+    socket.on('user_typing', (username) => {
+        const typingElement = document.getElementById('typing');
+        typingElement.textContent = `${username} is typing...`;
+        setTimeout(() => {
+            typingElement.textContent = '';
+        }, 2000);
+    });
+
+    messageInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             sendMessage();
+        } else {
+            socket.emit('typing');
         }
     });
 });
