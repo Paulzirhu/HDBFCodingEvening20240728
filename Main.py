@@ -17,13 +17,17 @@ def login():
             return redirect(url_for('index'))
     return render_template('login.html')
 
+import html
+
 @socketio.on('message')
 def handle_message(msg):
-    username = session['username']
+    username = session.get('username')
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    message = {'username': username, 'msg': msg, 'timestamp': timestamp}
+    sanitized_msg = html.escape(msg)
+    message = {'username': username, 'msg': sanitized_msg, 'timestamp': timestamp}
     messages.append(message)
     send(message, broadcast=True)
+
 
 @socketio.on('connect')
 def handle_connect():
