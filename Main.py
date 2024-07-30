@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 app = Flask(__name__)
+from datetime import datetime
+
 app.secret_key = 'secret!123'
 socketio = SocketIO(app)
 
@@ -21,6 +23,10 @@ def login():
         return redirect(url_for('index'))
     return render_template('login.html')
 import html
+
+@app.route('/')
+def index():
+    return render_template('chat.html')
 
 @socketio.on('message')
 def handle_message(msg):
