@@ -13,15 +13,15 @@ messages = []
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        if username and len(username) > 0:
+        username = request.form.get('username', '').strip()
+        if username:
             session['username'] = username
-            users[username] = request.sid
-            return redirect(url_for('chat'))  # Changed to 'chat'
+            # No need to assign request.sid here
+            return redirect(url_for('chat'))
         else:
             return "Username cannot be empty", 400
     if 'username' in session:
-        return redirect(url_for('chat'))  # Changed to 'chat'
+        return redirect(url_for('chat'))
     return render_template('login.html')
 
 @app.route('/chat')
